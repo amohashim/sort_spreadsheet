@@ -1,0 +1,35 @@
+# We have a spreadsheet with 10 columns and 500 rows. We want to sort the values in the 5th column by their cooresponding values in the 1st column.
+
+# Importing the necessary packages
+import pandas as pd
+import numpy as np
+
+# Creating the "spreadsheet" variable by importing an excel file with the read_excel() function:
+spreadsheet = pd.read_excel('file_path.xlsx','sheet_name')
+
+# Creating the "categorization_vector" variable by obtaining the unique values in the 1st column:
+categorization_vector = pd.unique(spreadsheet.iloc[:,1])
+
+# Defining the "sort" function:
+def sort(spreadsheet,categorization_vector,categories_column_position,subcategories_column_position):
+  frame = pd.DataFrame()
+  n_columns = len(categorization_vector)
+  n_rows = spreadsheet.shape[0]
+  identifier_column = np.array(spreadsheet.iloc[:,categories_column_position])
+  solution_column = np.array(spreadsheet.iloc[:,subcategories_column_position])
+  for i in range(n_columns):
+    identifier = categorization_vector[i]
+    vector = np.empty(0)
+    for r in range(n_rows):
+      objective = identifier_column[r]
+      solution = solution_column[r]
+      if identifier == objective:
+        vector = np.append(vector,solution)
+        vector = pd.DataFrame(np.unique(vector)) 
+    frame = pd.concat([frame,vector],axis = 1)
+  frame.set_axis(categorization_vector,axis=1,inplace = True)
+  print(frame)
+  
+# Using the function to sort our spreadsheet and store the resulting dataframe in "spreadsheet_sorted":
+spreadsheet_sorted = sort(spreadsheet,categorization_vector,1,5)
+
